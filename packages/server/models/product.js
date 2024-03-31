@@ -4,14 +4,14 @@ const ProductSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    price: { type: Number, required: true },
-    imageURL: { type: String, required: true },
+    price: { type: String, required: true },
+    imageURL: [{ type: String, required: true }],
     category: {
       type: String,
       required: [true, "Please provide a category"],
     },
     type: { type: String, required: true },
-    sizes: [{ type: String }],
+    sizes: [{ type: String, required: true }],
     ratings: [
       {
         rating: { type: Number, min: 1, max: 5 },

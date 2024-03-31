@@ -1,17 +1,17 @@
-import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./Screens/Auth/Login/LoginScreen";
 import SignupScreen from "./Screens/Auth/Signup/SignupScreen";
-import SplashScreen from "./Screens/SplashScreen/SplashScreen";
-import HomeScreen from "./Screens/Home/HomeScreen";
-import * as Font from "expo-font";
+import SplashScreen from "./Screens/Splash/SplashScreen";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import InterRegular from "./assets/fonts/Inter-Regular.ttf";
-import InterBold from "./assets/fonts/Inter-Bold.ttf";
 import { useState } from "react";
+import { UserScreens } from "./Screens/User/UserScreens";
+import { AdminScreens } from "./Screens/Admin/AdminScreens";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
+const queryClient = new QueryClient();
 const Stack = createNativeStackNavigator();
 
 const Auth = () => {
@@ -32,36 +32,34 @@ const Auth = () => {
 };
 
 export default function App() {
-  const [isFontLoaded, setIsFontLoaded] = useState(false);
-
-  // Load the font
-  Font.loadAsync({
-    "inter-regular": InterRegular,
-    "inter-bold": InterBold,
-    // Add other Inter font weights here
-  }).then(() => {
-    setIsFontLoaded(true);
-  });
-
-  if (!isFontLoaded) {
-    return null;
-  }
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
-        <Stack.Screen
-          name="SplashScreen"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Auth"
-          component={Auth}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="SplashScreen">
+            <Stack.Screen
+              name="SplashScreen"
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Auth"
+              component={Auth}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UserStack"
+              component={UserScreens}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AdminStack"
+              component={AdminScreens}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </QueryClientProvider>
+    </Provider>
   );
 }
