@@ -23,9 +23,9 @@ export default function SplashScreen() {
     dispatch(addUser({ name, isAdmin, token }));
     if (token === null) {
       navigation.replace("Auth");
-    } else if (token && isAdmin) {
+    } else if (token && isAdmin === "true") {
       navigation.replace("AdminStack");
-    } else if (token && !isAdmin) {
+    } else if (token && isAdmin === "false") {
       navigation.replace("UserStack");
     }
   };
