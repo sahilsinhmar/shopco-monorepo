@@ -2,14 +2,32 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../redux/Slices/User";
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen() {
   const [animating, setAnimating] = useState(true);
+
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  const dispatch = useDispatch();
 
   const isLoggedIn = async () => {
     setAnimating(false);
     const token = await AsyncStorage.getItem("token");
-    navigation.replace(token === null ? "Auth" : "HomeScreen");
+    const isAdmin = await AsyncStorage.getItem("isAdmin");
+    const name = await AsyncStorage.getItem("name");
+
+    dispatch(addUser({ name, isAdmin, token }));
+    if (token === null) {
+      navigation.replace("Auth");
+    } else if (token && isAdmin === "true") {
+      navigation.replace("AdminStack");
+    } else if (token && isAdmin === "false") {
+      navigation.replace("UserStack");
+    }
   };
 
   useEffect(() => {
@@ -54,7 +72,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 50,
     fontWeight: "500",
-    fontFamily: "inter-regular",
+    // fontFamily: "inter-regular",
   },
   tagLine: {
     fontSize: 15,
