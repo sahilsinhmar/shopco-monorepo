@@ -2877,6 +2877,7 @@ __metadata:
     react-native: "npm:0.73.6"
     react-native-bouncy-checkbox: "npm:^3.0.7"
     react-native-element-dropdown: "npm:^2.10.4"
+    react-native-pager-view: "npm:6.2.3"
     react-native-safe-area-context: "npm:4.8.2"
     react-native-screens: "npm:~3.29.0"
     react-native-web: "npm:~0.19.6"
@@ -8541,6 +8542,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/8a4052fe91a356e4b50fcc37aba465eea457639f463d7965b872c38615feee7d7a9b5f4eb7d9831f8941a0e27cb0db22f6675d579544f448208c99f39edc0466
+  languageName: node
+  linkType: hard
+
+"react-native-pager-view@npm:6.2.3":
+  version: 6.2.3
+  resolution: "react-native-pager-view@npm:6.2.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/a530fc1f967c2fc70c9d5409352ecf3a1d95028ff6016bfae74c52d3168f43b178a9c6bb3e924e3d6cc71e6a842f412da9445f9b4c54b2e80b0a314d284c56f9
   languageName: node
   linkType: hard
 

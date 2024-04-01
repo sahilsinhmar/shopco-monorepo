@@ -107,20 +107,7 @@ export const AdminScreens = () => {
   return (
     <>
       <StatusBar style="light" />
-      <Stack.Navigator
-        initialRouteName="AdminTabs"
-        // screenOptions={{
-        //   headerStyle: {
-        //     backgroundColor: "#000",
-        //   },
-        //   headerTintColor: "#fff",
-        //   headerTitleStyle: {
-        //     // fontFamily: "inter-bold",
-        //     fontWeight: "bold",
-        //     fontSize: 30,
-        //   },
-        // }}
-      >
+      <Stack.Navigator initialRouteName="AdminTabs">
         <Stack.Screen
           name="AdminTabs"
           component={AdminTabs}

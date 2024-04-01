@@ -1,28 +1,119 @@
-import { Button, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import {
+  Button,
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import axios from "axios";
+import ProductCard from "../../../Components/ProductCard/ProductCard";
+import { useQuery } from "@tanstack/react-query";
+import SkeletonProductCard from "../../../Components/ProductCard/SkeletonProductCard";
+import { useAppSelector } from "../../../redux/hooks";
 
 export default function UserHomeScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { token } = useAppSelector((state) => state.User);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleLogout = async () => {
+  const fetchProducts = async () => {
     try {
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("isAdmin");
-      navigation.replace("Auth");
+      const response = await axios.get(
+        `${
+          Platform.OS === "web"
+            ? "http://localhost:3000"
+            : process.env.EXPO_PUBLIC_BASE_URI
+        }/api/v1/products`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response && response.data && response.data.products) {
+        return response.data.products;
+      } else {
+        throw new Error("No products found in response data");
+      }
     } catch (error) {
-      console.log("Error during logout:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error(error.response.data.msg);
+      } else {
+        console.error("An unexpected error occurred. Please try again later.");
+      }
+      throw error;
     }
   };
 
+  const {
+    data: products,
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
+  const filteredProducts = products?.filter((product: any) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <View>
-      <Text>User HomeScreen</Text>
-      <Button title="Logout" onPress={handleLogout} />
+    <View style={styles.container}>
+      <Text style={styles.heading}>Products</Text>
+      <TextInput
+        style={{
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          width: "70%",
+          alignSelf: "center",
+          paddingHorizontal: 10,
+          borderRadius: 10,
+        }}
+        onChangeText={(text) => setSearchQuery(text)}
+        value={searchQuery}
+        placeholder="Search products..."
+      />
+
+      {queryError && <Text>Error: {queryError.message}</Text>}
+      {isLoading && (
+        <FlatList
+          data={Array.from({ length: 6 })}
+          renderItem={({ item }) => <SkeletonProductCard />}
+          numColumns={2}
+          contentContainerStyle={{ gap: 10, padding: 10 }}
+          columnWrapperStyle={{ gap: 10 }}
+        />
+      )}
+      {products?.length > 0 && (
+        <FlatList
+          data={filteredProducts}
+          renderItem={({ item }) => <ProductCard product={item} />}
+          numColumns={Platform.OS === "web" ? 4 : 2}
+          contentContainerStyle={{
+            gap: 10,
+            paddingHorizontal: Platform.OS === "web" ? 20 : 5,
+          }}
+          columnWrapperStyle={{ gap: 10 }}
+        />
+      )}
     </View>
   );
 }
-0;
-const styles = StyleSheet.create({});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    gap: 6,
+    paddingVertical: 10,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});

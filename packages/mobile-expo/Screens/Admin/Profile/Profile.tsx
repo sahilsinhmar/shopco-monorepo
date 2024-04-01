@@ -13,6 +13,7 @@ export default function Profile() {
     try {
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("isAdmin");
+      await AsyncStorage.removeItem("name");
       dispatch(clearUser());
       navigation.replace("Auth");
     } catch (error) {
