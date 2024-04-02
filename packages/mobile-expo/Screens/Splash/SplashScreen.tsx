@@ -15,7 +15,7 @@ export default function SplashScreen() {
   const dispatch = useDispatch();
 
   const isLoggedIn = async () => {
-    setAnimating(false);
+    
     const token = await AsyncStorage.getItem("token");
     const isAdmin = await AsyncStorage.getItem("isAdmin");
     const name = await AsyncStorage.getItem("name");
@@ -28,6 +28,7 @@ export default function SplashScreen() {
     } else if (token && isAdmin === "false") {
       navigation.replace("UserStack");
     }
+    setAnimating(false);
   };
 
   useEffect(() => {
@@ -42,7 +43,11 @@ export default function SplashScreen() {
           <Text style={styles.tagLine}>A clothing store</Text>
         </View>
         <View>
-          <ActivityIndicator size="large" color="#000000" />
+          {animating && (
+          <View>
+            <ActivityIndicator size="large" color="#000000" />
+          </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
