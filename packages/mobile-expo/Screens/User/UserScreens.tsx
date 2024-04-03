@@ -1,10 +1,10 @@
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar } from "expo-status-bar";
-import { Platform, Pressable, Text, View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { StatusBar, Platform, View, Text } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Link } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Profile from "./Profile/Profile";
 import ProductScreen from "./ProductScreen/ProductScreen";
 import UserHomeScreen from "./Home/HomeScreen";
@@ -14,16 +14,41 @@ import { useAppSelector } from "../../redux/hooks";
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
 
+// Custom hook to get the cart item count
+const useCartItemCount = () => {
+  const cartItems = useAppSelector((state) => state.Cart.cartItems);
+  return cartItems.length;
+};
+
+// Component to render the cart icon with item count
+const CartIcon = () => {
+  const numberOfItems = useCartItemCount();
+  return (
+    <Link to={{ screen: "CartStack" }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {numberOfItems > 0 && (
+          <Text style={{ color: "white", marginRight: 8 }}>
+            {numberOfItems}
+          </Text>
+        )}
+
+        <FontAwesome6 name="cart-shopping" color="white" size={24} />
+      </View>
+    </Link>
+  );
+};
+
+// Common screen options with dynamic headerRight
 const commonScreenOptions = {
   headerStyle: {
     backgroundColor: "#000",
   },
   headerTintColor: "#fff",
   headerTitleStyle: {
-    // fontFamily: "inter-bold",
     fontWeight: "bold",
     fontSize: 30,
   },
+  headerRight: () => <CartIcon />,
 };
 
 const CartStack = () => {
@@ -51,24 +76,6 @@ const UserTabs = () => {
         component={UserHomeScreen}
         options={{
           headerTitle: "SHOP.CO",
-          headerRight: () => (
-            <Link to={{ screen: "CartStack" }}>
-              {Platform.OS === "web" ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 10,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={{ color: "white", fontSize: 18 }}>Cart</Text>
-                  <FontAwesome6 name="cart-shopping" color="white" size={24} />
-                </View>
-              ) : (
-                <FontAwesome6 name="cart-shopping" color="white" size={24} />
-              )}
-            </Link>
-          ),
           headerRightContainerStyle: { paddingHorizontal: 20 },
           title: "Home",
           tabBarIcon: ({ color, size }) => (

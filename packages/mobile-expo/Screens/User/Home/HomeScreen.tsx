@@ -96,6 +96,9 @@ export default function UserHomeScreen() {
           contentContainerStyle={{
             gap: 10,
             paddingHorizontal: Platform.OS === "web" ? 20 : 5,
+            borderWidth: 1,
+            paddingVertical: 10,
+            borderColor: "red",
           }}
           columnWrapperStyle={{ gap: 10 }}
         />
