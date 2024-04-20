@@ -5,9 +5,7 @@ import {
   Image,
   StyleSheet,
   Pressable,
-  Platform,
   ScrollView,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
 import {
@@ -17,11 +15,13 @@ import {
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
-import { addItem, clearCart, removeItem } from "../../../redux/Slices/Cart";
+import { addItem, removeItem } from "../../../redux/Slices/Cart";
+import ColorSelection from "../../../Components/ProductScreen/ColorSelection";
+import SizeSelection from "../../../Components/ProductScreen/SizeSelection";
+import ProductImages from "../../../Components/ProductScreen/ProductImages";
 
 const ProductScreen = () => {
   const [selectedSize, setSelectedSize] = useState("");
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,19 +29,6 @@ const ProductScreen = () => {
   const route = useRoute();
   const { product } = route.params;
   const dispatch = useAppDispatch();
-
-  const colorMapping = {
-    Red: "#FF0000",
-    Blue: "#0000FF",
-    Green: "#008000",
-    Yellow: "#FFFF00",
-    Orange: "#FFA500",
-    Purple: "#800080",
-    Pink: "#FFC0CB",
-    Black: "#000000",
-    White: "#FFFFFF",
-    Gray: "#808080",
-  };
 
   useEffect(() => {
     navigation.setOptions({ title: product?.name });
@@ -59,106 +46,27 @@ const ProductScreen = () => {
   return (
     <>
       <ScrollView style={styles.container}>
-        {/* <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: product.imageURL[selectedImageIndex] }}
-          style={styles.productImage}
-        />
-      </View> */}
-        <View style={styles.smallImagesContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {product.imageURL.map((image, index) => (
-              // <Pressable
-              //   // onPress={() => setSelectedImageIndex(index)}
-              //   style={[
-              //     styles.smallImageContainer,
-              //     {
-              //       borderColor: selectedImageIndex === index ? "black" : "white",
-              //     },
-              //   ]}
-              // >
-              <Image
-                key={index}
-                source={{ uri: image }}
-                style={styles.smallImage}
-              />
-              // </Pressable>
-            ))}
-          </ScrollView>
-        </View>
+        <ProductImages images={product.imageURL} />
         <View style={styles.infoContainer}>
           <Text style={styles.productName}>{product.name}</Text>
           <Text style={styles.productDescription}>{product.description}</Text>
-
-          <View style={styles.sizeContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 18 }}>Sizes</Text>
-
-            <View style={styles.sizeItemsContainer}>
-              {product.sizes.map((size) => (
-                <Pressable
-                  onPress={() => setSelectedSize(size)}
-                  key={size}
-                  style={[
-                    styles.sizes,
-                    {
-                      backgroundColor:
-                        selectedSize === size ? "black" : "white",
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.sizeText,
-                      { color: selectedSize === size ? "white" : "black" },
-                    ]}
-                  >
-                    {size}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-          <View style={styles.sizeContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 18 }}>Colors</Text>
-
-            <View style={styles.sizeItemsContainer}>
-              {product.colors.map((color, index) => {
-                const backgroundColor = colorMapping[color];
-
-                return (
-                  <Pressable
-                    onPress={() => setSelectedColor(color)}
-                    key={index}
-                    style={[
-                      styles.sizes,
-                      {
-                        backgroundColor,
-                        borderWidth: selectedColor === color ? 2 : 0,
-                        borderColor:
-                          selectedColor === color ? "black" : "transparent",
-                      },
-                    ]}
-                  ></Pressable>
-                );
-              })}
-            </View>
-          </View>
-          <Text>{error}</Text>
+          <SizeSelection
+            sizes={product.sizes}
+            selectedSize={selectedSize}
+            onSelectSize={setSelectedSize}
+          />
+          <ColorSelection
+            colors={product.colors}
+            selectedColor={selectedColor}
+            onSelectColor={setSelectedColor}
+          />
+          <Text style={styles.error}>{error}</Text>
           <Text style={styles.productPrice}> &#8377; {product.price}</Text>
         </View>
       </ScrollView>
       <View>
         <TouchableOpacity onPress={handleAdd} style={styles.btn}>
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              // fontFamily: "inter-bold",
-              fontSize: 24,
-            }}
-          >
-            Add to Cart
-          </Text>
+          <Text style={styles.btnText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -174,27 +82,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  imageContainer: {
-    width: "100%",
-    height: 300,
-    borderWidth: 1,
-    backgroundColor: "black",
-  },
-  productImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
+
   smallImagesContainer: {
     width: "100%",
     height: 300,
-
     backgroundColor: "black",
   },
-  smallImageContainer: {
-    width: "100%",
-    height: "100%",
-  },
+
   smallImage: {
     width: 390,
     height: "100%",
@@ -222,7 +116,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
-  sizes: {
+  sizeButton: {
     backgroundColor: "white",
     width: 40,
     aspectRatio: 1,
@@ -232,9 +126,32 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "black",
   },
+  sizeButtonSelected: {
+    backgroundColor: "black",
+  },
   sizeText: {
     fontSize: 20,
     fontWeight: "500",
+  },
+  sizeTextSelected: {
+    color: "white",
+  },
+  colorButton: {
+    width: 40,
+    aspectRatio: 1,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  colorButtonSelected: {
+    borderColor: "black",
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  error: {
+    color: "red",
   },
   btn: {
     backgroundColor: "black",
@@ -244,6 +161,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 10,
     marginHorizontal: 10,
+  },
+  btnText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 24,
   },
 });
 

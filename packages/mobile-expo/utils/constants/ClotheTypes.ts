@@ -1,5 +1,7 @@
 export const ClothesTypes = [
   { label: "T-shirt", value: "T-shirt" },
+  { label: "Shirt", value: "Shirt" },
+  { label: "Trouser", value: "Trouser" },
   { label: "Jeans", value: "Jeans" },
   { label: "Dress Shirt", value: "Dress Shirt" },
   { label: "Suit", value: "Suit" },

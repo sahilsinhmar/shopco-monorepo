@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "concurrently \"yarn workspace @shopco/server start\" \" yarn workspace @shopco/mobile-expo start \" "
+    "start": "concurrently \"yarn workspace @shopco/server start\" \" yarn workspace @shopco/mobile-expo android \" "
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

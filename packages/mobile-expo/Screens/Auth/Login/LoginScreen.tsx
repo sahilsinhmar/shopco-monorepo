@@ -24,11 +24,11 @@ import { ParamListBase } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
 import { addUser } from "../../../redux/Slices/User";
+import axiosInstance from "../../../utils/Api/axiosInstance";
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [admin, setAdmin] = useState(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -53,28 +53,23 @@ export default function LoginScreen() {
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_BASE_URI}${
-          admin ? "/api/v1/auth/login/admin" : "/api/v1/auth/login"
-        }`,
+      const response = await axiosInstance.post(
+        "/api/v1/auth/login",
         lowercaseData
       );
-      const {
-        token,
-        user: { isAdmin, name },
-      } = response.data;
+      const { token, user } = response.data;
+      console.log("login screen", user);
 
+      await AsyncStorage.setItem("user", JSON.stringify(user));
       await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("isAdmin", JSON.stringify(isAdmin));
-      await AsyncStorage.setItem("name", name);
 
-      dispatch(addUser({ name, isAdmin, token }));
+      dispatch(addUser({ user, token }));
 
       reset();
       clearErrors();
-      if (isAdmin === false) {
-        navigation.replace("UserStack", {});
-      } else if (isAdmin === true) {
+      if (user.role === "user") {
+        navigation.replace("UserStack");
+      } else if (user.role === "admin") {
         navigation.replace("AdminStack");
       }
     } catch (error: unknown) {
@@ -164,7 +159,7 @@ export default function LoginScreen() {
               />
             </View>
             {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            <BouncyCheckbox
+            {/* <BouncyCheckbox
               size={25}
               fillColor="black"
               unfillColor="#ffff"
@@ -178,7 +173,7 @@ export default function LoginScreen() {
               textContainerStyle={{ marginVertical: 10 }}
               isChecked={admin}
               onPress={() => setAdmin(!admin)}
-            />
+            /> */}
             <View style={styles.btnContainer}>
               <Pressable
                 style={styles.btn}

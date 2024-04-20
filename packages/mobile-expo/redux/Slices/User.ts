@@ -1,14 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface User {
-  name: string | null;
-  isAdmin: boolean;
-  token: string | null;
+  id: string;
+  name: string;
+  email: string;
+  role: string;
 }
 
-const initialState: User = {
-  name: null,
-  isAdmin: false,
+type UserState = {
+  userInfo: User | null;
+  token: string | null;
+};
+
+const initialState: UserState = {
+  userInfo: null,
   token: null,
 };
 
@@ -19,16 +24,14 @@ export const UserSlice = createSlice({
     addUser: (state, action) => {
       return {
         ...state,
-        name: action.payload.name,
-        isAdmin: action.payload.isAdmin,
+        userInfo: action.payload.user,
         token: action.payload.token,
       };
     },
     clearUser: (state) => {
       return {
         ...state,
-        name: null,
-        isAdmin: false,
+        userInfo: null,
         token: null,
       };
     },

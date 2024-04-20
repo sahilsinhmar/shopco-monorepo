@@ -13,6 +13,7 @@ import ProductCard from "../../../Components/ProductCard/ProductCard";
 import { useQuery } from "@tanstack/react-query";
 import SkeletonProductCard from "../../../Components/ProductCard/SkeletonProductCard";
 import { useAppSelector } from "../../../redux/hooks";
+import axiosInstance from "../../../utils/Api/axiosInstance";
 
 export default function UserHomeScreen() {
   const { token } = useAppSelector((state) => state.User);
@@ -20,18 +21,11 @@ export default function UserHomeScreen() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(
-        `${
-          Platform.OS === "web"
-            ? "http://localhost:3000"
-            : process.env.EXPO_PUBLIC_BASE_URI
-        }/api/v1/products`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.get(`/api/v1/products`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response && response.data && response.data.products) {
         return response.data.products;
       } else {
@@ -62,17 +56,8 @@ export default function UserHomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Products</Text>
       <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          width: "70%",
-          alignSelf: "center",
-          paddingHorizontal: 10,
-          borderRadius: 10,
-        }}
+        style={styles.searchInput}
         onChangeText={(text) => setSearchQuery(text)}
         value={searchQuery}
         placeholder="Search products..."
@@ -84,8 +69,8 @@ export default function UserHomeScreen() {
           data={Array.from({ length: 6 })}
           renderItem={({ item }) => <SkeletonProductCard />}
           numColumns={2}
-          contentContainerStyle={{ gap: 10, padding: 10 }}
-          columnWrapperStyle={{ gap: 10 }}
+          contentContainerStyle={styles.flatListContentContainer}
+          columnWrapperStyle={styles.flatListColumnWrapper}
         />
       )}
       {products?.length > 0 && (
@@ -93,14 +78,11 @@ export default function UserHomeScreen() {
           data={filteredProducts}
           renderItem={({ item }) => <ProductCard product={item} />}
           numColumns={Platform.OS === "web" ? 4 : 2}
-          contentContainerStyle={{
-            gap: 10,
-            paddingHorizontal: Platform.OS === "web" ? 20 : 5,
-            borderWidth: 1,
-            paddingVertical: 10,
-            borderColor: "red",
-          }}
-          columnWrapperStyle={{ gap: 10 }}
+          contentContainerStyle={[
+            styles.flatListContentContainer,
+            { paddingHorizontal: Platform.OS === "web" ? 20 : 5 },
+          ]}
+          columnWrapperStyle={styles.flatListColumnWrapper}
         />
       )}
     </View>
@@ -118,5 +100,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  searchInput: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    width: "70%",
+    alignSelf: "center",
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  flatListContentContainer: {
+    gap: 10,
+    padding: 10,
+  },
+  flatListColumnWrapper: {
+    gap: 10,
   },
 });

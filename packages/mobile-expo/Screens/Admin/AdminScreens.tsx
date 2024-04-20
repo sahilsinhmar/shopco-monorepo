@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AdminHomeScreen from "./Home/AdminHomeScreen";
 import { StatusBar } from "expo-status-bar";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Link } from "@react-navigation/native";
@@ -16,15 +16,9 @@ const CreateProductStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: {
-          backgroundColor: "#000",
-        },
-        headerTintColor: "#fff",
-        headerTitleStyle: {
-          // fontFamily: "inter-bold",
-          fontWeight: "bold",
-          fontSize: 30,
-        },
+        headerStyle: styles.headerStyle,
+        headerTintColor: styles.headerTintColor.color,
+        headerTitleStyle: styles.headerTitleStyle,
       }}
     >
       <Stack.Screen
@@ -40,20 +34,12 @@ const AdminTabs = () => {
   return (
     <Tabs.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "#FFFFFF",
-        tabBarInactiveTintColor: "#A9A9A9",
-        tabBarStyle: {
-          backgroundColor: "#000",
-        },
-        headerStyle: {
-          backgroundColor: "#000",
-        },
-        headerTintColor: "#fff",
-        headerTitleStyle: {
-          // fontFamily: "inter-bold",
-          fontWeight: "bold",
-          fontSize: 30,
-        },
+        tabBarActiveTintColor: styles.tabBarActiveTintColor.color,
+        tabBarInactiveTintColor: styles.tabBarInactiveTintColor.color,
+        tabBarStyle: styles.tabBarStyle,
+        headerStyle: styles.headerStyle,
+        headerTintColor: styles.headerTintColor.color,
+        headerTitleStyle: styles.headerTitleStyle,
       }}
     >
       <Tabs.Screen
@@ -61,20 +47,11 @@ const AdminTabs = () => {
         component={AdminHomeScreen}
         options={{
           headerTitle: "SHOP.CO",
-
           headerRight: () => (
             <Link to={{ screen: "CreateProductStack" }}>
               {Platform.OS === "web" ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 10,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={{ color: "white", fontSize: 18 }}>
-                    Add Product
-                  </Text>
+                <View style={styles.addProductButton}>
+                  <Text style={styles.addProductButtonText}>Add Product</Text>
                   <FontAwesome6 name="add" color="white" size={24} />
                 </View>
               ) : (
@@ -124,3 +101,34 @@ export const AdminScreens = () => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  headerStyle: {
+    backgroundColor: "#000",
+  },
+  headerTintColor: {
+    color: "#fff",
+  },
+  headerTitleStyle: {
+    fontWeight: "bold",
+    fontSize: 30,
+  },
+  tabBarActiveTintColor: {
+    color: "#FFFFFF",
+  },
+  tabBarInactiveTintColor: {
+    color: "#A9A9A9",
+  },
+  tabBarStyle: {
+    backgroundColor: "#000",
+  },
+  addProductButton: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
+  addProductButtonText: {
+    color: "white",
+    fontSize: 18,
+  },
+});

@@ -1,5 +1,5 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -8,26 +8,25 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../../redux/Slices/User";
 
 export default function SplashScreen() {
-  const [animating, setAnimating] = useState(true);
-
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const dispatch = useDispatch();
 
   const isLoggedIn = async () => {
-    setAnimating(false);
+    const userString = await AsyncStorage.getItem("user");
+    let user = null;
+    if (userString !== null) {
+      user = JSON.parse(userString);
+    }
+
     const token = await AsyncStorage.getItem("token");
-    const isAdmin = await AsyncStorage.getItem("isAdmin");
-    const name = await AsyncStorage.getItem("name");
 
-    console.log(isAdmin);
-
-    dispatch(addUser({ name, isAdmin, token }));
+    dispatch(addUser({ user, token }));
     if (token === null) {
       navigation.replace("Auth");
-    } else if (token && isAdmin === "true") {
+    } else if (token && user.role === "admin") {
       navigation.replace("AdminStack");
-    } else if (token && isAdmin === "false") {
+    } else if (token && user.role === "user") {
       navigation.replace("UserStack");
     }
   };

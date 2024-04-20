@@ -20,21 +20,15 @@ export default function ProductCard({ product }: any) {
       <View>
         <View>
           <Image
-            source={{
-              uri: `${product.imageURL[0]}`,
-            }}
+            source={{ uri: `${product.imageURL[0]}` }}
             style={styles.image}
             resizeMode={Platform.OS === "web" ? "center" : "cover"}
           />
         </View>
         <View style={styles.infocontainer}>
-          <Text style={{ fontWeight: "bold" }}>{product.name}</Text>
-          <Text style={{ color: "gray", fontWeight: "300" }}>
-            {product.description}
-          </Text>
-          <Text style={{ fontWeight: "500", fontSize: 16 }}>
-            &#8377; {product.price}
-          </Text>
+          <Text style={styles.productName}>{product.name}</Text>
+          <Text style={styles.productDescription}>{product.description}</Text>
+          <Text style={styles.productPrice}>&#8377; {product.price}</Text>
         </View>
       </View>
     </Pressable>
@@ -60,5 +54,16 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 4,
     padding: 10,
+  },
+  productName: {
+    fontWeight: "bold",
+  },
+  productDescription: {
+    color: "gray",
+    fontWeight: "300",
+  },
+  productPrice: {
+    fontWeight: "500",
+    fontSize: 16,
   },
 });

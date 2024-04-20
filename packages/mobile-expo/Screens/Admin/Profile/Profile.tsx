@@ -12,7 +12,7 @@ export default function Profile() {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("isAdmin");
+      await AsyncStorage.removeItem("role");
       await AsyncStorage.removeItem("name");
       dispatch(clearUser());
       navigation.replace("Auth");

@@ -18,6 +18,7 @@ import { signUpSchema } from "../../../utils/FormSchemas/FormSchema";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ParamListBase } from "@react-navigation/native";
+import axiosInstance from "../../../utils/Api/axiosInstance";
 
 export default function SignupScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,12 +43,11 @@ export default function SignupScreen() {
       ...data,
       email: data.email.toLowerCase(),
       name: data.name.toLowerCase(),
-      isAdmin: false,
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_BASE_URI}/api/v1/auth/register`,
+      const response = await axiosInstance.post(
+        `/api/v1/auth/register`,
         lowercaseData
       );
       const { status } = response.data;
@@ -77,9 +77,7 @@ export default function SignupScreen() {
     >
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: Platform.OS === "web" ? 100 : 15,
-        }}
+        contentContainerStyle={styles.scrollViewContentContainer}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
@@ -175,16 +173,7 @@ export default function SignupScreen() {
                 disabled={isLoading}
               >
                 {!isLoading ? (
-                  <Text
-                    style={{
-                      color: "white",
-                      textAlign: "center",
-                      // fontFamily: "inter-bold",
-                      fontSize: 18,
-                    }}
-                  >
-                    Register
-                  </Text>
+                  <Text style={styles.btnText}>Register</Text>
                 ) : (
                   <ActivityIndicator color="#ffff" size={25} />
                 )}
@@ -217,7 +206,6 @@ const styles = StyleSheet.create({
     }`,
   },
   logo: {
-    // fontFamily: "inter-bold",
     fontWeight: "700",
     fontSize: 40,
     textAlign: "center",
@@ -226,7 +214,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     minWidth: Platform.OS === "web" ? 600 : 300,
   },
-
   image: {
     width: "100%",
     height: Platform.OS === "web" ? 400 : 300,
@@ -236,9 +223,7 @@ const styles = StyleSheet.create({
   formContainer: {
     minWidth: Platform.OS === "web" ? 450 : 300,
     flexDirection: "column",
-    gap: 15,
   },
-
   inputContainer: {
     marginVertical: 10,
     flexDirection: "column",
@@ -253,7 +238,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 15,
     fontWeight: "800",
-    // fontFamily: "inter-bold",
   },
   error: {
     color: "red",
@@ -266,7 +250,6 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: "black",
-    // fontFamily: "inter-bold",
     fontSize: 18,
     padding: 9,
     color: "white",
@@ -276,7 +259,6 @@ const styles = StyleSheet.create({
   },
   secondaryBtn: {
     backgroundColor: "white",
-    // fontFamily: "inter-bold",
     fontSize: 18,
     padding: 9,
     color: "black",
@@ -286,7 +268,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "600",
-    // fontFamily: "inter-bold",
     fontSize: 15,
+  },
+  btnText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  scrollViewContentContainer: {
+    paddingTop: Platform.OS === "web" ? 100 : 0,
   },
 });

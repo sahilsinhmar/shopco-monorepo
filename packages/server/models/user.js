@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
       min: 6,
     },
-    isAdmin: {
-      type: Boolean,
+    role: {
+      type: String,
     },
   },
   { timestamps: true }

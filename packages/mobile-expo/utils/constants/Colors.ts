@@ -10,3 +10,16 @@ export const Colors = [
   { label: "White", value: "White" },
   { label: "Gray", value: "Gray" },
 ];
+
+export const colorMapping = {
+  Red: "#FF0000",
+  Blue: "#0000FF",
+  Green: "#008000",
+  Yellow: "#FFFF00",
+  Orange: "#FFA500",
+  Purple: "#800080",
+  Pink: "#FFC0CB",
+  Black: "#000000",
+  White: "#FFFFFF",
+  Gray: "#808080",
+};

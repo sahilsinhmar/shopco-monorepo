@@ -11,6 +11,8 @@ import { verifyToken } from "./middleware/Authenticate.js";
 import proudctsRouter from "./routes/products.js";
 import multer from "multer";
 import { createProduct } from "./controllers/products.js";
+import paymentRouter from "./routes/payment.js";
+import orderRouter from "./routes/order.js";
 
 const app = express();
 
@@ -34,6 +36,9 @@ app.post(
   upload.array("images"),
   createProduct
 );
+
+app.use("/api/v1/payment", verifyToken, paymentRouter);
+app.use("/api/v1/order", verifyToken, orderRouter);
 
 app.use("/api/v1/products", verifyToken, proudctsRouter);
 

@@ -4,7 +4,7 @@ import User from "../models/user.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, isAdmin } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const tempUser = { name, email, password: hashedPassword, isAdmin };
+    const tempUser = { name, email, password: hashedPassword, role: "user" };
 
     const user = await User.create({ ...tempUser });
     res.status(201).json({
@@ -43,7 +43,7 @@ export const userLogin = async (req, res) => {
         .status(400)
         .json({ msg: "Please provide both email and password" });
     }
-    const tempUser = await User.findOne({ email, isAdmin: false });
+    const tempUser = await User.findOne({ email });
 
     if (!tempUser) return res.status(400).json({ msg: "User does not exist" });
 
@@ -53,8 +53,12 @@ export const userLogin = async (req, res) => {
     }
 
     const token = jwt.sign({ id: tempUser._id }, process.env.JWT_SECRET);
-    const user = { ...tempUser._doc };
-    delete user.password;
+    const user = {
+      id: tempUser._id,
+      name: tempUser.name,
+      email: tempUser.email,
+      role: tempUser.role,
+    };
 
     res.status(200).json({ user, token });
   } catch (error) {

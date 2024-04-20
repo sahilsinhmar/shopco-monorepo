@@ -25,6 +25,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ActivityIndicator } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "../../../utils/Api/axiosInstance";
 
 export default function CreateProduct() {
   const [isLoading, setIsLoading] = useState(false);
@@ -132,16 +133,12 @@ export default function CreateProduct() {
 
     try {
       const token = await AsyncStorage.getItem("token");
-      const res = await axios.post(
-        `${process.env.EXPO_PUBLIC_BASE_URI}/api/v1/createproduct/`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axiosInstance.post(`/api/v1/createproduct/`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res?.data?.status === "SUCCESS") {
         navigation.goBack();
@@ -171,13 +168,7 @@ export default function CreateProduct() {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        flexGrow: 1,
-        paddingTop: 30,
-        paddingBottom: 150,
-        backgroundColor: "white",
-        alignItems: `${Platform.OS === "web" ? "center" : "stretch"}`,
-      }}
+      contentContainerStyle={styles.scrollViewContentContainer}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.formContainer}>
@@ -244,13 +235,7 @@ export default function CreateProduct() {
           label="Colors"
           isLoading={isLoading}
         />
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "center",
-          }}
-        >
+        <View style={styles.imageContainer}>
           <View>
             {Platform.OS === "web" ? (
               images.length < 3 && (
@@ -265,16 +250,13 @@ export default function CreateProduct() {
                 </label>
               )
             ) : (
-              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              <View style={styles.imageWrapper}>
                 {images &&
                   images.map((image, index) => (
-                    <View key={index}>
-                      <Image
-                        source={{ uri: image.uri }}
-                        style={{ width: 100, height: 100 }}
-                      />
+                    <View key={index} style={styles.imageItem}>
+                      <Image source={{ uri: image.uri }} style={styles.image} />
                       <Pressable
-                        style={{ position: "absolute", top: 0, right: 0 }}
+                        style={styles.removeButton}
                         onPress={() => handleRemoveImage(index)}
                       >
                         <Entypo name="cross" size={24} color="black" />
@@ -284,7 +266,7 @@ export default function CreateProduct() {
                 {images.length < 3 && (
                   <Pressable
                     onPress={handleSelectFile}
-                    style={{ alignSelf: "center" }}
+                    style={styles.addButton}
                   >
                     <MaterialIcons name="add-a-photo" size={44} color="black" />
                   </Pressable>
@@ -299,16 +281,7 @@ export default function CreateProduct() {
           disabled={isLoading}
         >
           {!isLoading ? (
-            <Text
-              style={{
-                color: "white",
-                textAlign: "center",
-                // fontFamily: "inter-bold",
-                fontSize: 18,
-              }}
-            >
-              Add
-            </Text>
+            <Text style={styles.btnText}>Add</Text>
           ) : (
             <ActivityIndicator color="#ffff" size={25} />
           )}
@@ -321,14 +294,12 @@ export default function CreateProduct() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    paddingHorizontal: 2,
+  scrollViewContentContainer: {
+    flexGrow: 1,
+    paddingTop: 30,
+    paddingBottom: 150,
     backgroundColor: "white",
-    alignItems: "center",
-
-    minHeight: "100%",
+    alignItems: Platform.OS === "web" ? "center" : "stretch",
   },
   formContainer: {
     flex: 1,
@@ -363,9 +334,40 @@ const styles = StyleSheet.create({
     padding: 9,
     borderRadius: 10,
   },
+  btnText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 18,
+  },
   error: {
     color: "red",
     fontSize: 10,
     textAlign: "center",
+  },
+  imageWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  imageItem: {
+    position: "relative",
+    width: 100,
+    height: 100,
+  },
+  imageContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  removeButton: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
+  addButton: {
+    alignSelf: "center",
   },
 });
